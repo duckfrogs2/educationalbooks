@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple URL Embedder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    iframe {
+      width: 90%;
+      height: 500px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      width: 300px;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple URL Embedder</h1>
+  <p>Enter a URL below to embed it:</p>
+  <input id="urlInput" type="text" placeholder="https://example.com">
+  <button onclick="embedURL()">Embed</button>
+  <div>
+    <iframe id="iframe" src="" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    function embedURL() {
+      const url = document.getElementById('urlInput').value;
+      const iframe = document.getElementById('iframe');
+      
+      // Check if a URL is entered
+      if (url) {
+        try {
+          // Set the iframe's source
+          iframe.src = url;
+        } catch (error) {
+          alert('Error loading the URL. Please try again.');
+        }
+      } else {
+        alert('Please enter a valid URL!');
+      }
+    }
+  </script>
+</body>
+</html>
