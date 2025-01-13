@@ -33,8 +33,12 @@
   <input id="urlInput" type="text" placeholder="https://example.com">
   <button onclick="embedURL()">Embed</button>
   <div>
-    <iframe id="iframe" src="" frameborder="0" allowfullscreen></iframe>
+    <!-- Use the custom x-frame-bypass element for embedding -->
+    <iframe is="x-frame-bypass" id="iframe" src="" frameborder="0" allowfullscreen></iframe>
   </div>
+
+  <!-- Include the X-Frame-Bypass JS module -->
+  <script type="module" src="https://unpkg.com/x-frame-bypass"></script>
 
   <script>
     function embedURL() {
