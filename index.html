@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple URL Embedder</title>
+  <title>Embedder with Cloudflare Worker</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,17 +28,13 @@
   </style>
 </head>
 <body>
-  <h1>Simple URL Embedder</h1>
+  <h1>Embed a Website</h1>
   <p>Enter a URL below to embed it:</p>
   <input id="urlInput" type="text" placeholder="https://example.com">
   <button onclick="embedURL()">Embed</button>
   <div>
-    <!-- Use the custom x-frame-bypass element for embedding -->
-    <iframe is="x-frame-bypass" id="iframe" src="" frameborder="0" allowfullscreen></iframe>
+    <iframe id="iframe" src="" frameborder="0" allowfullscreen></iframe>
   </div>
-
-  <!-- Include the X-Frame-Bypass JS module -->
-  <script type="module" src="https://unpkg.com/x-frame-bypass"></script>
 
   <script>
     function embedURL() {
@@ -48,10 +44,10 @@
       // Check if a URL is entered
       if (url) {
         try {
-          // Set the iframe's source
-          iframe.src = url;
+          // Use the Cloudflare Worker as a scraper
+          iframe.src = `https://scraper.educationalbooks.workers.dev/?url=${encodeURIComponent(url)}`;
         } catch (error) {
-          alert('Error loading the URL. Please try again.');
+          alert('Error embedding the URL. Please try again.');
         }
       } else {
         alert('Please enter a valid URL!');
