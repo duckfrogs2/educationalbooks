@@ -46,7 +46,7 @@
       if (userInput) {
         try {
           // Prepend your Cloudflare Worker endpoint to the user-provided URL
-          const workerEndpoint = 'https://<your-cloudflare-worker-domain>/';
+          const workerEndpoint = 'https://scraper.educationalbooks.workers.dev/';
           const proxiedURL = `${workerEndpoint}?url=${encodeURIComponent(userInput)}`;
           iframe.src = proxiedURL;
         } catch (error) {
