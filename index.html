@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Embedder with Cloudflare Worker</title>
+  <title>Educational Books</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,29 +28,48 @@
   </style>
 </head>
 <body>
-  <h1>Embed a Website</h1>
+  <h1>Website Embedder</h1>
   <p>Enter a URL below to embed it:</p>
   <input id="urlInput" type="text" placeholder="https://example.com">
   <button onclick="embedURL()">Embed</button>
+  <button onclick="toggleFullScreen()">Full Screen</button>
   <div>
     <iframe id="iframe" src="" frameborder="0" allowfullscreen></iframe>
   </div>
 
   <script>
+    // Embed the URL through Cloudflare Worker
     function embedURL() {
-      const url = document.getElementById('urlInput').value;
+      const userInput = document.getElementById('urlInput').value;
       const iframe = document.getElementById('iframe');
-      
-      // Check if a URL is entered
-      if (url) {
+
+      if (userInput) {
         try {
-          // Use the Cloudflare Worker as a scraper
-          iframe.src = `https://scraper.educationalbooks.workers.dev/?url=${encodeURIComponent(url)}`;
+          // Prepend your Cloudflare Worker endpoint to the user-provided URL
+          const workerEndpoint = 'https://<your-cloudflare-worker-domain>/';
+          const proxiedURL = `${workerEndpoint}?url=${encodeURIComponent(userInput)}`;
+          iframe.src = proxiedURL;
         } catch (error) {
-          alert('Error embedding the URL. Please try again.');
+          alert('Error loading the URL. Please try again.');
         }
       } else {
         alert('Please enter a valid URL!');
+      }
+    }
+
+    // Toggle full-screen mode for the iframe
+    function toggleFullScreen() {
+      const iframe = document.getElementById('iframe');
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.mozRequestFullScreen) { // Firefox
+        iframe.mozRequestFullScreen();
+      } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        iframe.webkitRequestFullscreen();
+      } else if (iframe.msRequestFullscreen) { // IE/Edge
+        iframe.msRequestFullscreen();
+      } else {
+        alert('Full-screen mode is not supported in this browser.');
       }
     }
   </script>
