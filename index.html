@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Educational Books</title>
+  <title>Simple URL Embedder</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,30 +25,55 @@
     button {
       cursor: pointer;
     }
+    #fullscreenButton {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #fullscreenButton:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
-  <h1>Website Embedder</h1>
+  <h1>Simple URL Embedder</h1>
   <p>Enter a URL below to embed it:</p>
   <input id="urlInput" type="text" placeholder="https://example.com">
   <button onclick="embedURL()">Embed</button>
-  <button onclick="toggleFullScreen()">Full Screen</button>
   <div>
     <iframe id="iframe" src="" frameborder="0" allowfullscreen></iframe>
   </div>
+  <button id="fullscreenButton" onclick="toggleFullscreen()">Go Fullscreen</button>
 
   <script>
-    // Embed the URL through Cloudflare Worker
     function embedURL() {
-      const userInput = document.getElementById('urlInput').value;
+      const url = document.getElementById('urlInput').value;
       const iframe = document.getElementById('iframe');
-
-      if (userInput) {
+      
+      // Check if a URL is entered
+      if (url) {
         try {
-          // Prepend your Cloudflare Worker endpoint to the user-provided URL
-          const workerEndpoint = 'https://scraper.educationalbooks.workers.dev/';
-          const proxiedURL = `${workerEndpoint}?url=${encodeURIComponent(userInput)}`;
-          iframe.src = proxiedURL;
+          // Request the content from your Vercel function
+          fetch(`https://scraper-serverless-ol7rf835d-nicolas-projects-4b6d01e3.vercel.app/api/scrape?url=${encodeURIComponent(url)}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.content) {
+                // Inject the HTML content into the iframe
+                const iframeDoc = iframe.contentWindow.document;
+                iframeDoc.open();
+                iframeDoc.write(data.content);
+                iframeDoc.close();
+              } else {
+                alert('Error: No content received.');
+              }
+            })
+            .catch(error => {
+              alert('Error fetching the website: ' + error.message);
+            });
         } catch (error) {
           alert('Error loading the URL. Please try again.');
         }
@@ -57,19 +82,17 @@
       }
     }
 
-    // Toggle full-screen mode for the iframe
-    function toggleFullScreen() {
+    function toggleFullscreen() {
       const iframe = document.getElementById('iframe');
+
       if (iframe.requestFullscreen) {
         iframe.requestFullscreen();
       } else if (iframe.mozRequestFullScreen) { // Firefox
         iframe.mozRequestFullScreen();
-      } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari, Opera
+      } else if (iframe.webkitRequestFullscreen) { // Chrome, Safari and Opera
         iframe.webkitRequestFullscreen();
       } else if (iframe.msRequestFullscreen) { // IE/Edge
         iframe.msRequestFullscreen();
-      } else {
-        alert('Full-screen mode is not supported in this browser.');
       }
     }
   </script>
