@@ -25,17 +25,11 @@
     button {
       cursor: pointer;
     }
-    #fullscreenButton {
+    .fullscreen-btn {
       margin-top: 20px;
-      padding: 10px 20px;
+      padding: 10px;
       font-size: 16px;
-      background-color: #007BFF;
-      color: white;
-      border: none;
       cursor: pointer;
-    }
-    #fullscreenButton:hover {
-      background-color: #0056b3;
     }
   </style>
 </head>
@@ -47,55 +41,52 @@
   <div>
     <iframe id="iframe" src="" frameborder="0" allowfullscreen></iframe>
   </div>
-  <button id="fullscreenButton" onclick="toggleFullscreen()">Go Fullscreen</button>
+  <button class="fullscreen-btn" onclick="toggleFullScreen()">Toggle Full Screen</button>
 
   <script>
-    function embedURL() {
+    async function embedURL() {
       const url = document.getElementById('urlInput').value;
       const iframe = document.getElementById('iframe');
       
-      // Check if a URL is entered
       if (url) {
         try {
-          console.log('Fetching URL:', url);
-          // Request the content from your Vercel function
-          fetch(`https://scraper-serverless-njhyi5o9i-nicolas-projects-4b6d01e3.vercel.app/api/scrape?url=${encodeURIComponent(url)}`)
-            .then(response => {
-              console.log('Response Status:', response.status);
-              if (response.ok) {
-                return response.json();
-              } else {
-                throw new Error('Failed to fetch content');
-              }
-            })
-            .then(data => {
-              console.log('Data received:', data);
-              if (data.content) {
-                // Inject the HTML content into the iframe
-                const iframeDoc = iframe.contentWindow.document;
-                iframeDoc.open();
-                iframeDoc.write(data.content);
-                iframeDoc.close();
-              } else {
-                alert('Error: No content received.');
-              }
-            })
-            .catch(error => {
-              console.error('Error fetching the website:', error);
-              alert('Error fetching the website: ' + error.message);
-            });
+          // Fetch the content from your Vercel scraper
+          const apiUrl = `https://scraper-serverless-njhyi5o9i-nicolas-projects-4b6d01e3.vercel.app/api/scrape?url=${encodeURIComponent(url)}`;
+          console.log("Fetching URL:", apiUrl);
+
+          // Send the request to the serverless function
+          const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            mode: 'cors' // Ensure CORS is handled properly
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch the website');
+          }
+
+          const data = await response.json();
+          
+          if (data.content) {
+            // Set the iframe content with the scraped HTML
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(data.content);
+            iframeDoc.close();
+          }
         } catch (error) {
-          console.error('Error loading the URL:', error);
-          alert('Error loading the URL. Please try again.');
+          alert('Error fetching the website: ' + error.message);
         }
       } else {
         alert('Please enter a valid URL!');
       }
     }
 
-    function toggleFullscreen() {
+    function toggleFullScreen() {
       const iframe = document.getElementById('iframe');
-
       if (iframe.requestFullscreen) {
         iframe.requestFullscreen();
       } else if (iframe.mozRequestFullScreen) { // Firefox
